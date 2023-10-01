@@ -1,36 +1,30 @@
-from django.shortcuts import render
 from decimal import Decimal
-from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from django.db import models
-from datetime import datetime, timedelta,date
-from .models import UserProfile,EMI,Payment,LoanApplication
+from datetime import datetime, timedelta
+from .models import UserProfile,EMI,LoanApplication
 from .tasks import calculate_credit_score
 from .serializers import LoanApplicationSerializer
 from dateutil.relativedelta import relativedelta
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-import calendar
 from decimal import Decimal
-from django.db.models import Sum
 from django.utils.dateparse import parse_date
-from decimal import Decimal
-
+import pandas as pd
 @api_view(['POST'])
+
+
 def register_user(request):
     name = request.data.get('name')
     email = request.data.get('email')
     annual_income = request.data.get('annual_income')
     user_id = request.data.get('user_id')
+    df = pd.read_csv('static/transactions_data_Backend.csv')
     user = UserProfile.objects.create(
         name=name,
         email=email,
         annual_income=annual_income,
         user_id=user_id
     )
-
     if user:
         calculate_credit_score.delay(user_id)
     return Response({'Error':None,'User Id ': user_id})
@@ -75,9 +69,8 @@ def apply_loan(request):
     total_interest = (loan_amount * interest_rate * term_period) / (12 * 100)
 
     # Calculate emi_start_date as the last day of the month of disbursement_date
-    emi_start_date = disbursement_date.replace(day=1)  # Start with the first day of disbursement_date
-    emi_start_date += relativedelta(months=1, days=-1)  # Go to the last day of the month
-
+    nextmonth = disbursement_date.replace(day=1) + timedelta(days=32) # Start with the first day of disbursement_date
+    emi_start_date = datetime(nextmonth.year, nextmonth.month, 1)
     loan_data = {
         'user': user.id,
         'loan_type': loan_type,
@@ -85,7 +78,7 @@ def apply_loan(request):
         'interest_rate': interest_rate,
         'term_period': term_period,
         'disbursement_date': disbursement_date,
-        'emi_start_date': emi_start_date,
+        'emi_start_date': emi_start_date.date(),
         'total_interest': total_interest,
         'is_approved': True  
     }
@@ -102,7 +95,7 @@ def apply_loan(request):
         for _ in range(term_period):
             emi = EMI(
                 loan=loan_application,
-                actual_emi_date=emi_start_date,
+                actual_emi_date=emi_start_date.date(),
                 amount_due=emi_amount
             )
             emi_data.append(emi)
@@ -117,7 +110,6 @@ def apply_loan(request):
     
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-from decimal import Decimal
 
 @api_view(['POST'])
 def make_payment(request):
@@ -130,9 +122,9 @@ def make_payment(request):
     if not loan:
         return Response({'error': 'Loan does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    current_date = datetime.now().date()
+    current_date =datetime.date(2023, 10, 1)
 
-    due_emis = EMI.objects.filter(loan=loan, actual_emi_date__lt=current_date, is_paid=True).order_by('actual_emi_date').first()
+    due_emis = EMI.objects.filter(loan=loan, actual_emi_date__lte=current_date, is_paid=True).order_by('actual_emi_date').first()
     print("HEy",due_emis)
     if due_emis:
         return Response({'error': 'No Due is Pending'})

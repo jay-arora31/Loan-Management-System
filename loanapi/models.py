@@ -40,10 +40,3 @@ class EMI(models.Model):
         return f"EMI for Loan {self.loan.id} on {self.actual_emi_date}"
 
 
-class Payment(models.Model):
-    loan = models.ForeignKey(LoanApplication, on_delete=models.CASCADE, related_name='payments')
-    payment_date = models.DateField(auto_now_add=True)
-    late_payment = models.BooleanField(default=False)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    def __str__(self):
-        return f"Payment of {self.amount} on {self.payment_date} for Loan {self.loan_id}"
