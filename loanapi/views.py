@@ -139,7 +139,6 @@ def make_payment(request):
                 print("I am in")
                 print(i.actual_emi_date)
                 print(current_date)
-                
                 break
             if i.actual_emi_date==current_date and i.is_paid==False:
                 i.is_paid=True
