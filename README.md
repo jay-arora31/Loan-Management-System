@@ -22,7 +22,9 @@ loanmain/
 │   ├── settings.py
 │   ├── urls.py
 │   ├── wsgi.py
-│  
+│
+├── static/
+│   ├── transactions_data_Backend.csv
 ├── manage.py
 ├── requirements.txt
 ├── README.md
@@ -56,7 +58,15 @@ Download Redis
 
 https://github.com/tporadowski/redis/releases/download/v5.0.14.1/Redis-x64-5.0.14.1.msi
 
-After Installing Run ping in redis terminal
+After Installing redis go to this path
+```sh
+C:\Program Files\Redis
+```
+Double click redis_cli
+![image](https://github.com/jay-arora31/Loan-Management-System/assets/68243425/433d1b38-8af0-4397-b4da-c48a354a49e7)
+
+The run this command in terminal
+
 ```sh
 
 $ ping
