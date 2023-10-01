@@ -35,7 +35,7 @@ loanmain/
 
 Clone the repository to your local machine:
 ```sh
-$ git clone https://github.com/jay-arora31/Elevator-Challenge.git
+$ git clone https://github.com/jay-arora31/Loan-Management-System.git
 $ cd loanmain
 ```
 Install the required dependencies:
