@@ -2,7 +2,7 @@ from decimal import Decimal
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta,date
 from .models import UserProfile,EMI,LoanApplication
 from .tasks import calculate_credit_score
 from .serializers import LoanApplicationSerializer
@@ -122,7 +122,7 @@ def make_payment(request):
     if not loan:
         return Response({'error': 'Loan does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    current_date =datetime.date(2023, 10, 1)
+    current_date =date.today()
 
     due_emis = EMI.objects.filter(loan=loan, actual_emi_date__lte=current_date, is_paid=True).order_by('actual_emi_date').first()
     print("HEy",due_emis)
@@ -146,17 +146,21 @@ def make_payment(request):
                 i.payment_date=current_date
                 i.save()
                 if amount_paid<i.amount_due or amount_paid>i.amount_due:
-                    due_emis = EMI.objects.filter(loan=loan, actual_emi_date__gt=j.actual_emi_date, is_paid=False).order_by('actual_emi_date')
+                    due_emis = EMI.objects.filter(loan=loan, actual_emi_date__gt=i.actual_emi_date, is_paid=False).order_by('actual_emi_date')
                     due_count=due_emis.count()
-                    amount_diff=(j.amount_due-amount_paid)/due_count
+                    amount_diff=(i.amount_due-amount_paid)/due_count
                     for k in due_emis:
-                        k.amount_due+=amount_diff
+                        if amount_paid<i.amount_due:
+                            k.amount_due-=amount_diff
+                        else:
+                            k.amount_due+=amount_diff
+
                         next_emi=k.amount_due
                         k.save()
                     if amount_paid<i.amount_due:
-                        return Response({'error':None,'message': 'Current Month Emi is Successfully Paid But Your Paid Less than the Due Amount'})
+                        return Response({'error':None,'message': 'Current Month Emi is Successfully Paid But You have Paid Less than the Due Amount'})
                     else:
-                        return Response({'error':None,'message': 'Current Month Emi is Successfully Paid But Your Paid Greater than the Due Amount'})
+                        return Response({'error':None,'message': 'Current Month Emi is Successfully Paid But You have Paid Greater than the Due Amount'})
                 return Response({'error':None,'message': 'Current Month Emi is Successfully Paid'})
         due_emis = EMI.objects.filter(loan=loan, actual_emi_date__lt=current_date, is_paid=False).order_by('actual_emi_date')
         due_count=due_emis.count()
