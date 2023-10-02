@@ -65,7 +65,7 @@ C:\Program Files\Redis
 Double click redis_cli
 ![image](https://github.com/jay-arora31/book/assets/68243425/8108a171-2de8-4349-8d53-cbe7faa43afc)
 
-The run this command in terminal
+Then run this command in terminal
 
 ```sh
 
@@ -161,7 +161,7 @@ Output:
 ![image](https://github.com/jay-arora31/Loan-Management-System/assets/68243425/4f0a18d8-0de5-42e7-8ab7-7fc5551b9502)
 
 
-If i try to make payment again it will check in backend is there any emi due if not it will send this message
+If I try to make payment again, it will check in backend if there any emi due. If not, it will send below message
 ![image](https://github.com/jay-arora31/Loan-Management-System/assets/68243425/737930bf-4735-454e-b849-05769f615b53)
 
 
