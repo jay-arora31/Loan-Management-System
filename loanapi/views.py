@@ -118,27 +118,18 @@ def make_payment(request):
 
     # Check if the loan exists
     loan = LoanApplication.objects.filter(id=loan_id).first()
-    print(loan)
     if not loan:
         return Response({'error': 'Loan does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
 
     current_date =date.today()
 
     due_emis = EMI.objects.filter(loan=loan, actual_emi_date__lte=current_date, is_paid=True).order_by('actual_emi_date').first()
-    print("HEy",due_emis)
     if due_emis:
         return Response({'error': 'No Due is Pending'})
     else: 
-        print("I am in else")       
         due_emis = EMI.objects.filter(loan=loan, actual_emi_date=current_date, is_paid=False).order_by('actual_emi_date')
-        print(due_emis)
         for i in due_emis:
-            print(i.actual_emi_date)
-            print(current_date)
             if i.actual_emi_date>current_date:
-                print("I am in")
-                print(i.actual_emi_date)
-                print(current_date)
                 break
             if i.actual_emi_date==current_date and i.is_paid==False:
                 i.is_paid=True
@@ -192,11 +183,9 @@ def make_payment(request):
 @api_view(['GET'])
 def get_statement(request):
     loan_id = request.query_params.get('loan_id')
-    print(loan_id)
 
     # Check if the loan exists
     loan = LoanApplication.objects.filter(id=loan_id).first()
-    print(loan)
 
     if not loan:
         return Response({'error': 'Loan does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
