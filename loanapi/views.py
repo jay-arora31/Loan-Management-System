@@ -175,8 +175,10 @@ def make_payment(request):
                     due_count=due_emis.count()
                     amount_diff=(j.amount_due-amount_paid)/due_count
                     for k in due_emis:
-                        
-                        k.amount_due+=amount_diff
+                        if amount_paid<i.amount_due:
+                            k.amount_due-=amount_diff
+                        else:
+                            k.amount_due+=amount_diff
                         next_emi=k.amount_due
                         k.save()
                     if  amount_paid<j.amount_due or amount_paid>j.amount_due:
