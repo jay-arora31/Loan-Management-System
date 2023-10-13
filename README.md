@@ -146,7 +146,7 @@ Output:
 - **Method**: POST
 
 I have change the current date to 2023-10-01 because this is the first emi date
-![image](https://github.com/jay-arora31/Loan-Management-System/assets/68243425/95c90374-0d68-4508-a302-c75e15f85cff)
+![image](https://github.com/jay-arora31/Loan-Management-System/assets/68243425/737930bf-4735-454e-b849-05769f615b53)
 
 ### Request Body (JSON)
 ```json
@@ -162,7 +162,8 @@ Output:
 
 
 If I try to make payment again, it will check in backend if there any emi due. If not, it will send below message
-![image](https://github.com/jay-arora31/Loan-Management-System/assets/68243425/737930bf-4735-454e-b849-05769f615b53)
+![image](https://github.com/jay-arora31/Loan-Management-System/assets/68243425/f44e268b-5194-4332-8a4d-ba19a83979c9)
+
 
 
 
